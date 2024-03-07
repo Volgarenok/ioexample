@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 namespace durka
 {
@@ -50,7 +51,16 @@ namespace durka
 int main()
 {
   durka::Data d(0, 0);
-  std::cin >> d;
+  if (!(std::cin >> d))
+  {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
+    if (!(std::cin >> d))
+    {
+      std::cerr << "Error\n";
+      return 1;
+    }
+  }
   std::cout << d << "\n";
   return 0;
 }
