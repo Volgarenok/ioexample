@@ -21,8 +21,11 @@ namespace durka
     int a, b;
   };
 
-  //[10;10]
-  std::istream & operator>>(std::istream & in, Data & value)
+  struct DelimeterI
+  {
+    char expected;
+  };
+  std::istream & operator>>(std::istream & in, DelimeterI && exp)
   {
     std::istream::sentry guard(in);
     if (!guard)
@@ -31,24 +34,23 @@ namespace durka
     }
     char c = 0;
     in >> c;
-    if (c != '[')
+    if (c != exp.expected)
     {
       in.setstate(std::ios::failbit);
+    }
+    return in;
+  }
+
+  std::istream & operator>>(std::istream & in, Data & value)
+  {
+    std::istream::sentry guard(in);
+    if (!guard)
+    {
       return in;
     }
+    using del = DelimeterI;
     int a = 0, b = 0;
-    in >> a >> c >> b;
-    if (c != ';')
-    {
-      in.setstate(std::ios::failbit);
-      return in;
-    }
-    in >> c;
-    if (c != ']')
-    {
-      in.setstate(std::ios::failbit);
-      return in;
-    }
+    in >> del{'['} >> a >> del{';'} >> b >> del{']'};
     if (in)
     {
       value = Data(a, b);
