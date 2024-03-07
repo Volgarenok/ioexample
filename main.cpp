@@ -21,6 +21,7 @@ namespace durka
     int a, b;
   };
 
+  //[10;10]
   std::istream & operator>>(std::istream & in, Data & value)
   {
     std::istream::sentry guard(in);
@@ -28,8 +29,26 @@ namespace durka
     {
       return in;
     }
+    char c = 0;
+    in >> c;
+    if (c != '[')
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
     int a = 0, b = 0;
-    in >> a >> b;
+    in >> a >> c >> b;
+    if (c != ';')
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+    in >> c;
+    if (c != ']')
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
     if (in)
     {
       value = Data(a, b);
@@ -43,7 +62,7 @@ namespace durka
     {
       return out;
     }
-    out << value.get_a() << " " << value.get_b();
+    out << "[" << value.get_a() << ";" << value.get_b() << "]";
     return out;
   }
 }
